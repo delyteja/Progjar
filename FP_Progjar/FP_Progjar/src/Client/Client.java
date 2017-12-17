@@ -5,14 +5,16 @@
  */
 package Client;
 
-import fp_progjar.JawabanData;
-import fp_progjar.Server;
-import fp_progjar.SoalData;
+import Data.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import static java.lang.Thread.sleep;
+import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -27,14 +29,36 @@ import java.sql.*;
  * @author DELY
  */
 public class Client extends javax.swing.JFrame {
-    ServerSocket servSocket;
-    Socket socket;
-    int portNumber = 1777;
-    String str = "";
-    ObjectOutputStream oos;
-    ObjectInputStream ois;
-    JawabanData _jawaban;
+    final String INET_ADDR = "224.0.0.0";
+    final int PORT = 8889;
     SoalData _soal;
+      
+    private Object recvObjFrom(String hostName, int recvPort){    
+        try {
+          MulticastSocket clientSocket = new MulticastSocket(recvPort);
+          InetAddress address = InetAddress.getByName(hostName);
+          clientSocket.joinGroup(address);
+          byte[] recvBuf = new byte[5000];
+          DatagramPacket packet = new DatagramPacket(recvBuf,recvBuf.length);
+          clientSocket.receive(packet);
+          int byteCount = packet.getLength();
+          ByteArrayInputStream byteStream = new
+                                      ByteArrayInputStream(recvBuf);
+          ObjectInputStream is = new
+               ObjectInputStream(new BufferedInputStream(byteStream));
+          Object o = is.readObject();
+          is.close();
+          return(o);
+        }
+        catch (IOException e) {
+          System.err.println("Exception:  " + e);
+          e.printStackTrace();
+        }
+        catch (ClassNotFoundException e) { 
+            e.printStackTrace(); 
+        }
+        return(null);  
+    }
     
     /**
      * Creates new form Client
@@ -42,66 +66,6 @@ public class Client extends javax.swing.JFrame {
     public Client() {
         initComponents();
     }
-
-    //kirim jawaban ke Server
-    private void kirimJawaban() throws IOException {
-        try {
-            //buat test aja
-            JawabanData jaw = new JawabanData();
-            
-            /**
-             * SQL
-             * bikin kelas jawaban
-             */
-            
-            this.socket = new Socket(InetAddress.getLocalHost(), portNumber);
-            
-            ObjectInputStream ois = new ObjectInputStream(this.socket.getInputStream());
-            ObjectOutputStream oos = new ObjectOutputStream(this.socket.getOutputStream());
-            
-            oos.writeObject(jaw);
-            
-            while ((str = (String) ois.readObject()) != null) {
-                //      System.out.println(str);
-                oos.writeObject("bye");
-                
-                if (str.equals("bye"))
-                    break;
-            }
-            
-            ois.close();
-            oos.close();
-            socket.close();
-        } catch (Exception ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    private void nerimaSoal() {
-        try {
-            this.servSocket = new ServerSocket(portNumber);
-            System.out.println("Waiting for a connection on " + portNumber);
-            socket = this.servSocket.accept();
-            
-            this.oos = new ObjectOutputStream(socket.getOutputStream());
-            this.ois = new ObjectInputStream(socket.getInputStream());
-            
-            SoalData sol;
-            
-            while ((sol = (SoalData) ois.readObject()) != null) {
-                //      comp.printCompanyObject();
-                
-                oos.writeObject("bye bye");
-                break;
-            }
-            oos.close();
-            
-            socket.close();
-        } catch (Exception ex) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -172,7 +136,6 @@ public class Client extends javax.swing.JFrame {
 
         j1.setBackground(new java.awt.Color(255, 255, 255));
         jawaban.add(j1);
-        j1.setText("Ir. Soekarno");
         j1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 j1ActionPerformed(evt);
@@ -181,11 +144,9 @@ public class Client extends javax.swing.JFrame {
 
         j2.setBackground(new java.awt.Color(255, 255, 255));
         jawaban.add(j2);
-        j2.setText("M. Hatta");
 
         j3.setBackground(new java.awt.Color(255, 255, 255));
         jawaban.add(j3);
-        j3.setText("Megawati");
 
         soal.setBackground(new java.awt.Color(153, 255, 255));
         soal.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
@@ -193,7 +154,6 @@ public class Client extends javax.swing.JFrame {
         soal.setOpaque(true);
 
         jawaban.add(j4);
-        j4.setText("Susilo Bambang Y");
 
         javax.swing.GroupLayout backgroundLayout = new javax.swing.GroupLayout(background);
         background.setLayout(backgroundLayout);
@@ -289,8 +249,36 @@ public class Client extends javax.swing.JFrame {
 
             @Override
             public void run() {
+                while(true) {
+                    System.out.println("Receiving soal...");
+                    _soal = (SoalData) recvObjFrom(INET_ADDR,PORT);
+                    System.out.println("Soal received...");
+
+                    soal.setText(_soal.getSoal());
+                    
+                    ArrayList<String> jawabans = _soal.getJawabans();
+                    j1.setText(jawabans.get(0));
+                    j2.setText(jawabans.get(1));
+                    j3.setText(jawabans.get(2));
+                    j4.setText(jawabans.get(3));
+                    
+                    for(int i= _soal.getWaktu();i>=0;i--)
+                    {
+                        waktu.setText(String.valueOf(i));
+                        try {
+                            Thread.sleep(1000);
+                        } 
+                        catch (InterruptedException ex) {
+                            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                    waktu.setText("");
+                    soal.setText("");
+                }
+                /*
                 for(int k=1;k<5;k++)
-                {   Function f = new Function(k);
+                {   
+                    Function f = new Function(k);
                     ResultSet rs = null;
                     rs = f.find(null);
                     
@@ -323,7 +311,7 @@ public class Client extends javax.swing.JFrame {
                     soal.setText("");
                     Function j = new Function(k);
                     j.InserttoDB(jawaban.getSelection().getActionCommand());
-                }
+                }*/
             }
         });
         t.start();

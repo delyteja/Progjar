@@ -5,7 +5,6 @@
  */
 package Data;
 
-import fp_progjar.*;
 import java.io.Serializable;
 
 /**

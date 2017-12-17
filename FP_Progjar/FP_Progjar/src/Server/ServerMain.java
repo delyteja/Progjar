@@ -5,18 +5,13 @@
  */
 package Server;
 import Client.Client;
+import Data.*;
 import Server.UserAktif;
 import Server.Rank;
-import fp_progjar.JawabanData;
-import fp_progjar.Server;
-import fp_progjar.SoalData;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -26,73 +21,36 @@ import javax.swing.JFrame;
  * @author DELY
  */
 public class ServerMain extends javax.swing.JFrame {
-    ServerSocket servSocket;
-    Socket _socket;
-    int _port = 1777;
-    String str;    
-    ObjectOutputStream oos;
-    ObjectInputStream ois;
-    SoalData soal = new SoalData();
-    JawabanData jaw;
+    final String INET_ADDR = "224.0.0.0";
+    final int PORT = 8889;
+      
     
-    
-    //dapet jawaban
-    private void nerimaJawaban() throws IOException {
-        try {
-            this.servSocket = new ServerSocket(_port);
-            System.out.println("Waiting for a connection on " + _port);
-            _socket = this.servSocket.accept();
-            
-            this.oos = new ObjectOutputStream(_socket.getOutputStream());
-            this.ois = new ObjectInputStream(_socket.getInputStream());
-            
-            while ((jaw = (JawabanData) ois.readObject()) != null) {
-                //      comp.printCompanyObject();
-                
-                oos.writeObject("bye bye");
-                break;
-            }
-            oos.close();
-            
-            _socket.close();
-        } catch (Exception ex) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+    //mengirim objek
+    private void sendObjectTo(Object o, String hostName, int desPort) {    
+        try {      
+            DatagramSocket dSock = new DatagramSocket();
+            InetAddress address = InetAddress.getByName(hostName);
+            ByteArrayOutputStream byteStream = new
+            ByteArrayOutputStream(5000);
+            ObjectOutputStream os = new ObjectOutputStream(new BufferedOutputStream(byteStream));
+            os.flush();
+            os.writeObject(o);
+            os.flush();
+            //retrieves byte array
+            byte[] sendBuf = byteStream.toByteArray();
+            DatagramPacket packet = new DatagramPacket(sendBuf, sendBuf.length, address, desPort);
+            int byteCount = packet.getLength();
+            dSock.send(packet);
+            os.close();
         }
-    }
-    
-    //broadcast soal
-    private void kirimSoal() throws IOException {
-        try {
-            //buat test aja
-            SoalData jaw = new SoalData();
-            
-            /**
-             * SQL
-             * bikin kelas soal
-             */
-            
-            this._socket = new Socket(InetAddress.getLocalHost(), _port);
-            
-            ObjectInputStream ois = new ObjectInputStream(this._socket.getInputStream());
-            ObjectOutputStream oos = new ObjectOutputStream(this._socket.getOutputStream());
-            
-            oos.writeObject(jaw);
-            
-            while ((str = (String) ois.readObject()) != null) {
-                //      System.out.println(str);
-                oos.writeObject("bye");
-                
-                if (str.equals("bye"))
-                    break;
-            }
-            
-            ois.close();
-            oos.close();
-            _socket.close();
-        } catch (Exception ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        catch (UnknownHostException e) {
+            System.err.println("Exception:  " + e);
+            e.printStackTrace();    
         }
-    }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+  }
     
 
     /**
@@ -117,6 +75,11 @@ public class ServerMain extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         mulaibutton.setText("Mulai Tes");
+        mulaibutton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mulaibuttonActionPerformed(evt);
+            }
+        });
 
         jButton1.setText("User Aktif");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -180,6 +143,30 @@ public class ServerMain extends javax.swing.JFrame {
         rank.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void mulaibuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mulaibuttonActionPerformed
+        // TODO add your handling code here:
+        ArrayList<SoalData> soals = new ArrayList<SoalData>();
+        /**
+         * SQL:
+         * Semua soal dimasukkan dalam soals
+         */
+        //testaja
+        soals.add(new SoalData("test"));
+        
+        for(SoalData soal : soals) {
+            sendObjectTo(soal,INET_ADDR,PORT);
+            System.out.println("Sending done.");
+            
+            //nunggu X detik
+            try {
+                Thread.sleep(soal.getWaktu()*1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ServerMain.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        System.out.println("Done Sending.");
+    }//GEN-LAST:event_mulaibuttonActionPerformed
 
     /**
      * @param args the command line arguments

@@ -5,8 +5,8 @@
  */
 package Data;
 
-import fp_progjar.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  *
@@ -14,29 +14,37 @@ import java.io.Serializable;
  */
 public class SoalData implements Serializable {
     private String soal;
-    private String jawaban[];
+    ArrayList<String> jawabans = new ArrayList<String>();
     private int nomerSoal;
     private int waktu;
 
     public SoalData() {
+    }
+    
+    public SoalData(String test) {
         this.soal = "contoh soal";
         this.nomerSoal = 1;
-        this.waktu = 12;
+        this.waktu = 10;
+        this.jawabans.add("1");
+        this.jawabans.add("2");
+        this.jawabans.add("3");
+        this.jawabans.add("4");
     }
 
-    public SoalData(String soal, String[] jawaban, int nomerSoal, int waktu) {
+    public SoalData(String soal, ArrayList<String> jawabans, int nomerSoal, int waktu) {
         this.soal = soal;
-        this.jawaban = jawaban;
+        this.jawabans = jawabans;
         this.nomerSoal = nomerSoal;
         this.waktu = waktu;
+        
     }
     
     public String getSoal() {
         return soal;
     }
 
-    public String[] getJawaban() {
-        return jawaban;
+    public ArrayList<String> getJawabans() {
+        return jawabans;
     }
 
     public int getNomerSoal() {
@@ -51,8 +59,8 @@ public class SoalData implements Serializable {
         this.soal = soal;
     }
 
-    public void setJawaban(String[] jawaban) {
-        this.jawaban = jawaban;
+    public void setJawabans(ArrayList<String> jawabans) {
+        this.jawabans = jawabans;
     }
 
     public void setNomerSoal(int nomerSoal) {
