@@ -34,6 +34,7 @@ public class Client extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jawaban = new javax.swing.ButtonGroup();
         background = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -45,6 +46,11 @@ public class Client extends javax.swing.JFrame {
         j3 = new javax.swing.JRadioButton();
         soal = new javax.swing.JLabel();
         j4 = new javax.swing.JRadioButton();
+
+        jawaban.add(j1);
+        jawaban.add(j2);
+        jawaban.add(j3);
+        jawaban.add(j4);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -87,6 +93,7 @@ public class Client extends javax.swing.JFrame {
         });
 
         j1.setBackground(new java.awt.Color(255, 255, 255));
+        jawaban.add(j1);
         j1.setText("Ir. Soekarno");
         j1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -95,9 +102,11 @@ public class Client extends javax.swing.JFrame {
         });
 
         j2.setBackground(new java.awt.Color(255, 255, 255));
+        jawaban.add(j2);
         j2.setText("M. Hatta");
 
         j3.setBackground(new java.awt.Color(255, 255, 255));
+        jawaban.add(j3);
         j3.setText("Megawati");
 
         soal.setBackground(new java.awt.Color(153, 255, 255));
@@ -105,6 +114,7 @@ public class Client extends javax.swing.JFrame {
         soal.setAutoscrolls(true);
         soal.setOpaque(true);
 
+        jawaban.add(j4);
         j4.setText("Susilo Bambang Y");
 
         javax.swing.GroupLayout backgroundLayout = new javax.swing.GroupLayout(background);
@@ -172,8 +182,6 @@ public class Client extends javax.swing.JFrame {
                 .addGap(96, 96, 96))
         );
 
-        soal.getAccessibleContext().setAccessibleName("");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -194,7 +202,11 @@ public class Client extends javax.swing.JFrame {
     }//GEN-LAST:event_waktuComponentAdded
         
     private void mulaiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mulaiActionPerformed
-       
+      j1.setActionCommand("A");
+      j2.setActionCommand("B");
+      j3.setActionCommand("C");
+      j4.setActionCommand("D");
+      
         Thread t = new Thread(new Runnable() {
 
             @Override
@@ -216,7 +228,9 @@ public class Client extends javax.swing.JFrame {
                     {
                         System.out.println("Error :" + ex);
                     }
-                   // printsoal(k);  
+                   
+                   
+                    
                     for(int i=10;i>=0;i--)
                     {
                      waktu.setText(String.valueOf(i));
@@ -229,6 +243,8 @@ public class Client extends javax.swing.JFrame {
                     }
                     waktu.setText("");
                     soal.setText("");
+                    Function j = new Function(k);
+                    j.InserttoDB(jawaban.getSelection().getActionCommand());
                 }
             }
         });
@@ -290,6 +306,7 @@ public class Client extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.ButtonGroup jawaban;
     private javax.swing.JButton mulai;
     private javax.swing.JLabel soal;
     private javax.swing.JLabel waktu;
@@ -300,17 +317,17 @@ public class Client extends javax.swing.JFrame {
     {
         Connection con = null;
         ResultSet rs =  null;
-        String token;
+        String nomor,jawabannya;
         PreparedStatement ps = null;
         public Function(int tkn)
         {
-            this.token=String.valueOf(tkn);
+            this.nomor=String.valueOf(tkn);
         }
         public ResultSet find(String s)
         {
             try{
             con = DriverManager.getConnection("jdbc:mysql://localhost:3306/fp_progjar", "root", "");
-            ps = con.prepareStatement("select * from soal where nomor = " + token );
+            ps = con.prepareStatement("select * from soal where nomor = " + nomor );
             rs = ps.executeQuery();
             }
             catch (Exception e)
@@ -318,6 +335,22 @@ public class Client extends javax.swing.JFrame {
                 System.out.println("\n Error :" +e);
             }
             return rs;
+        }
+        public void InserttoDB(String jawaban )
+        {   this.jawabannya=jawaban;
+            try
+            {   System.out.println(jawaban);
+                con = DriverManager.getConnection("jdbc:mysql://localhost:3306/fp_progjar", "root", "");
+                ps = con.prepareStatement("insert into jawaban(NOMOR,jawaban) values('"+nomor+"','"+jawabannya+"')");
+                        //+ "("+nomor+','+jawabannya+")");
+                ps.executeUpdate();
+            }
+            catch(Exception e)
+            {
+                System.out.println("\n Error :" +e);
+               
+            }
+            
         }
         
     } 
