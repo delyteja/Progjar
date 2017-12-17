@@ -5,11 +5,20 @@
  */
 package Client;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 /**
  *
  * @author DELY
  */
 public class Register extends javax.swing.JFrame {
+        Connection con = null;
+        ResultSet rs =  null;
+      //  String nomor,jawabannya;
+        PreparedStatement ps = null;
 
     /**
      * Creates new form Register
@@ -27,21 +36,97 @@ public class Register extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        usernamelabel = new javax.swing.JLabel();
+        emaillabel = new javax.swing.JLabel();
+        passwordlabel = new javax.swing.JLabel();
+        passwordfield = new javax.swing.JPasswordField();
+        usernamefield = new javax.swing.JTextField();
+        emailfield = new javax.swing.JTextField();
+        registerbutton = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        usernamelabel.setText("User Name");
+
+        emaillabel.setText("Email");
+
+        passwordlabel.setText("Password");
+
+        registerbutton.setText("Register");
+        registerbutton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                registerbuttonActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("REGISTER");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(44, 44, 44)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(emaillabel)
+                    .addComponent(usernamelabel)
+                    .addComponent(passwordlabel))
+                .addGap(71, 71, 71)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(registerbutton)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(usernamefield)
+                        .addComponent(emailfield)
+                        .addComponent(passwordfield, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)))
+                .addContainerGap(79, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addComponent(jLabel1)
+                .addGap(31, 31, 31)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(usernamefield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(usernamelabel))
+                .addGap(27, 27, 27)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(emaillabel)
+                    .addComponent(emailfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(27, 27, 27)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(passwordfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(passwordlabel))
+                .addGap(38, 38, 38)
+                .addComponent(registerbutton)
+                .addContainerGap(58, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void registerbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerbuttonActionPerformed
+       String name,email,password;
+        try
+       {
+              name = usernamefield.getText();
+              email = emailfield.getText();
+              password = String.valueOf(passwordfield.getPassword());
+               con = DriverManager.getConnection("jdbc:mysql://localhost:3306/fp_progjar", "root", "");
+  ps = con.prepareStatement("insert into user(username,email,password) values('"+name+"','"+email+"','"+password+"')");
+                       
+                ps.executeUpdate();
+       }
+       catch(Exception e)
+       {
+           System.out.println(e);
+       }
+        
+
+// TODO add your handling code here:
+    }//GEN-LAST:event_registerbuttonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -79,5 +164,13 @@ public class Register extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField emailfield;
+    private javax.swing.JLabel emaillabel;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JPasswordField passwordfield;
+    private javax.swing.JLabel passwordlabel;
+    private javax.swing.JButton registerbutton;
+    private javax.swing.JTextField usernamefield;
+    private javax.swing.JLabel usernamelabel;
     // End of variables declaration//GEN-END:variables
 }
