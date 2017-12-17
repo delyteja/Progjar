@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package Server;
+import Client.Client;
 import Server.UserAktif;
 import Server.Rank;
 import fp_progjar.JawabanData;
@@ -13,6 +14,7 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -25,30 +27,24 @@ import javax.swing.JFrame;
  */
 public class ServerMain extends javax.swing.JFrame {
     ServerSocket servSocket;
-    Socket fromClientSocket;
-    int cTosPortNumber = 1777;
+    Socket _socket;
+    int _port = 1777;
     String str;    
     ObjectOutputStream oos;
     ObjectInputStream ois;
     SoalData soal = new SoalData();
     JawabanData jaw;
     
-    /**
-     * Creates new form ServerMain
-     */
-    public ServerMain() {
-        initComponents();
-    }
     
     //dapet jawaban
     private void nerimaJawaban() throws IOException {
         try {
-            this.servSocket = new ServerSocket(cTosPortNumber);
-            System.out.println("Waiting for a connection on " + cTosPortNumber);
-            fromClientSocket = this.servSocket.accept();
+            this.servSocket = new ServerSocket(_port);
+            System.out.println("Waiting for a connection on " + _port);
+            _socket = this.servSocket.accept();
             
-            this.oos = new ObjectOutputStream(fromClientSocket.getOutputStream());
-            this.ois = new ObjectInputStream(fromClientSocket.getInputStream());
+            this.oos = new ObjectOutputStream(_socket.getOutputStream());
+            this.ois = new ObjectInputStream(_socket.getInputStream());
             
             while ((jaw = (JawabanData) ois.readObject()) != null) {
                 //      comp.printCompanyObject();
@@ -58,18 +54,53 @@ public class ServerMain extends javax.swing.JFrame {
             }
             oos.close();
             
-            fromClientSocket.close();
+            _socket.close();
         } catch (Exception ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    //broadcast jawaban
-    private void kirimSoal() {
-        
+    //broadcast soal
+    private void kirimSoal() throws IOException {
+        try {
+            //buat test aja
+            SoalData jaw = new SoalData();
+            
+            /**
+             * SQL
+             * bikin kelas soal
+             */
+            
+            this._socket = new Socket(InetAddress.getLocalHost(), _port);
+            
+            ObjectInputStream ois = new ObjectInputStream(this._socket.getInputStream());
+            ObjectOutputStream oos = new ObjectOutputStream(this._socket.getOutputStream());
+            
+            oos.writeObject(jaw);
+            
+            while ((str = (String) ois.readObject()) != null) {
+                //      System.out.println(str);
+                oos.writeObject("bye");
+                
+                if (str.equals("bye"))
+                    break;
+            }
+            
+            ois.close();
+            oos.close();
+            _socket.close();
+        } catch (Exception ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
 
+    /**
+     * Creates new form ServerMain
+     */
+    public ServerMain() {
+        initComponents();
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

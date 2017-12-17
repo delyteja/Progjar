@@ -6,11 +6,14 @@
 package Client;
 
 import fp_progjar.JawabanData;
+import fp_progjar.Server;
+import fp_progjar.SoalData;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import static java.lang.Thread.sleep;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
@@ -24,9 +27,14 @@ import java.sql.*;
  * @author DELY
  */
 public class Client extends javax.swing.JFrame {
+    ServerSocket servSocket;
     Socket socket;
     int portNumber = 1777;
     String str = "";
+    ObjectOutputStream oos;
+    ObjectInputStream ois;
+    JawabanData _jawaban;
+    SoalData _soal;
     
     /**
      * Creates new form Client
@@ -66,6 +74,31 @@ public class Client extends javax.swing.JFrame {
             socket.close();
         } catch (Exception ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void nerimaSoal() {
+        try {
+            this.servSocket = new ServerSocket(portNumber);
+            System.out.println("Waiting for a connection on " + portNumber);
+            socket = this.servSocket.accept();
+            
+            this.oos = new ObjectOutputStream(socket.getOutputStream());
+            this.ois = new ObjectInputStream(socket.getInputStream());
+            
+            SoalData sol;
+            
+            while ((sol = (SoalData) ois.readObject()) != null) {
+                //      comp.printCompanyObject();
+                
+                oos.writeObject("bye bye");
+                break;
+            }
+            oos.close();
+            
+            socket.close();
+        } catch (Exception ex) {
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
