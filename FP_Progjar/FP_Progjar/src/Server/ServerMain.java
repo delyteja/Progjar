@@ -6,7 +6,17 @@
 package Server;
 import Server.UserAktif;
 import Server.Rank;
+import fp_progjar.JawabanData;
+import fp_progjar.Server;
+import fp_progjar.SoalData;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 /**
@@ -14,13 +24,51 @@ import javax.swing.JFrame;
  * @author DELY
  */
 public class ServerMain extends javax.swing.JFrame {
-
+    ServerSocket servSocket;
+    Socket fromClientSocket;
+    int cTosPortNumber = 1777;
+    String str;    
+    ObjectOutputStream oos;
+    ObjectInputStream ois;
+    SoalData soal = new SoalData();
+    JawabanData jaw;
+    
     /**
      * Creates new form ServerMain
      */
     public ServerMain() {
         initComponents();
     }
+    
+    //dapet jawaban
+    private void nerimaJawaban() throws IOException {
+        try {
+            this.servSocket = new ServerSocket(cTosPortNumber);
+            System.out.println("Waiting for a connection on " + cTosPortNumber);
+            fromClientSocket = this.servSocket.accept();
+            
+            this.oos = new ObjectOutputStream(fromClientSocket.getOutputStream());
+            this.ois = new ObjectInputStream(fromClientSocket.getInputStream());
+            
+            while ((jaw = (JawabanData) ois.readObject()) != null) {
+                //      comp.printCompanyObject();
+                
+                oos.writeObject("bye bye");
+                break;
+            }
+            oos.close();
+            
+            fromClientSocket.close();
+        } catch (Exception ex) {
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    //broadcast jawaban
+    private void kirimSoal() {
+        
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.

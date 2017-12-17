@@ -7,6 +7,19 @@
 package fp_progjar;
 
 import fp_progjar.Client;
+import static fp_progjar.MulticastSocketServer.INET_ADDR;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -17,7 +30,8 @@ import java.util.logging.Logger;
  * @author DELY
  */
 public class Server extends javax.swing.JFrame {
-
+    
+    
     /**
      * Creates new form Server
      */
@@ -66,6 +80,11 @@ public class Server extends javax.swing.JFrame {
         jButton1.setBackground(new java.awt.Color(153, 255, 255));
         jButton1.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         jButton1.setLabel("Mulai Test");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout Panel1Layout = new javax.swing.GroupLayout(Panel1);
         Panel1.setLayout(Panel1Layout);
@@ -109,6 +128,39 @@ public class Server extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        try (DatagramSocket serverSocket = new DatagramSocket()) 
+        {
+            try
+            {
+                Connection con = DriverManager.getConnection(url, userid, password);
+                System.out.println("lala");
+                st = con.createStatement();
+                for(int i=1;i<6;i++)
+                {  
+                    String sql="select * from soal where nomor="+String.valueOf(i);
+                    rs=st.executeQuery(sql);
+                    if(rs.next())
+                    {
+                        nomor = rs.getInt("nomor");
+                        tanya = rs.getString("soal");
+                    }
+                  DatagramPacket msgPacket = new DatagramPacket(tanya.getBytes(),tanya.getBytes().length, addr, PORT);
+                  serverSocket.send(msgPacket); 
+                  Thread.sleep(5000);
+                }
+                
+            }
+            catch(Exception ex)
+            {
+                System.out.println(ex);
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments

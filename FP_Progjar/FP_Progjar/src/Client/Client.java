@@ -5,7 +5,14 @@
  */
 package Client;
 
+import fp_progjar.JawabanData;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import static java.lang.Thread.sleep;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,13 +24,51 @@ import java.sql.*;
  * @author DELY
  */
 public class Client extends javax.swing.JFrame {
-
+    Socket socket;
+    int portNumber = 1777;
+    String str = "";
+    
     /**
      * Creates new form Client
      */
     public Client() {
         initComponents();
     }
+
+    //kirim jawaban ke Server
+    private void kirimJawaban() throws IOException {
+        try {
+            //buat test aja
+            JawabanData jaw = new JawabanData();
+            
+            /**
+             * SQL
+             * bikin kelas jawaban
+             */
+            
+            this.socket = new Socket(InetAddress.getLocalHost(), portNumber);
+            
+            ObjectInputStream ois = new ObjectInputStream(this.socket.getInputStream());
+            ObjectOutputStream oos = new ObjectOutputStream(this.socket.getOutputStream());
+            
+            oos.writeObject(jaw);
+            
+            while ((str = (String) ois.readObject()) != null) {
+                //      System.out.println(str);
+                oos.writeObject("bye");
+                
+                if (str.equals("bye"))
+                    break;
+            }
+            
+            ois.close();
+            oos.close();
+            socket.close();
+        } catch (Exception ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
