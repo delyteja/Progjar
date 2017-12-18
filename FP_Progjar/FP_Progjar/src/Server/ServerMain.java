@@ -11,6 +11,10 @@ import Server.Rank;
 import java.awt.event.WindowEvent;
 import java.io.*;
 import java.net.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,6 +27,9 @@ import javax.swing.JFrame;
 public class ServerMain extends javax.swing.JFrame {
     final String INET_ADDR = "224.0.0.0";
     final int PORT = 8889;
+     Connection con = null;
+     ResultSet rs =  null;
+     PreparedStatement ps = null;
       
     
     //mengirim objek
@@ -146,13 +153,44 @@ public class ServerMain extends javax.swing.JFrame {
 
     private void mulaibuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mulaibuttonActionPerformed
         // TODO add your handling code here:
-        ArrayList<SoalData> soals = new ArrayList<SoalData>();
+        String soalnya;
+        ArrayList<String> jawaban = null;
+        ArrayList <SoalData> soals = new ArrayList<SoalData>();
+        try
+        {   for(int i=1;i<=5;i++)
+           {
+                con = DriverManager.getConnection("jdbc:mysql://localhost:3306/fp_progjar", "root", "");
+                ps = con.prepareStatement("select * from soal2 where nomor="+String.valueOf(i));            
+                ResultSet rs = ps.executeQuery();
+                if(rs.next())
+                {
+                  
+                    soalnya = rs.getString("soal");
+                    jawaban.add(rs.getString("jawaban1"));
+                    jawaban.add(rs.getString("jawaban2"));
+                    jawaban.add(rs.getString("jawaban3"));
+                    jawaban.add(rs.getString("jawaban4"));
+                    
+                    soals.add(new SoalData(soalnya,jawaban,i));
+                }
+                System.out.println(rs.getString("jawaban1"));
+                
+           }
+            
+        }catch(Exception e)
+            {
+                System.out.println(e);
+            }
+        
+        
+        
         /**
          * SQL:
-         * Semua soal dimasukkan dalam soals
+         * Semua soal dimasukkan dalam soals 
          */
         //testaja
-        soals.add(new SoalData("test"));
+        
+      //  soals.add(new SoalData("test"));
         
         for(SoalData soal : soals) {
             sendObjectTo(soal,INET_ADDR,PORT);

@@ -262,7 +262,7 @@ public class Client extends javax.swing.JFrame {
                     j3.setText(jawabans.get(2));
                     j4.setText(jawabans.get(3));
                     
-                    for(int i= _soal.getWaktu();i>=0;i--)
+                    for(int i=10;i>=0;i--)
                     {
                         waktu.setText(String.valueOf(i));
                         try {
