@@ -104,7 +104,7 @@ public class Client extends javax.swing.JFrame {
             j2.setText(jawabans.get(1));
             j3.setText(jawabans.get(2));
             j4.setText(jawabans.get(3));
-
+            System.out.println("lalala");
             for(int i=10; i>=0; i--)
             {
                 waktu.setText(String.valueOf(i));

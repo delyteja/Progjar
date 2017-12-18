@@ -36,14 +36,14 @@ public class Koneksi {
                   */
             Connection con = DriverManager.getConnection(url, userid, password);
             st = con.createStatement();
-            String sql="select * from soal where nomor=1";
+            String sql="select * from soal2 where nomor=1";
             rs=st.executeQuery(sql);
             if(rs.next())
             {
                 nomor = rs.getInt("nomor");
                 tanya = rs.getString("soal");
             }
-            System.out.println(String.valueOf(nomor)+ tanya);
+            System.out.println(String.valueOf(nomor)+ tanya+rs.getString("jawaban1")+rs.getString("jawaban2")+rs.getString("jawaban3"));
         }
         catch(Exception e)
         {

@@ -32,6 +32,7 @@ public class ServerMain extends javax.swing.JFrame {
      PreparedStatement ps = null;
     int userAktif = 1;
     ArrayList<JawabanData> jawabanDatas = new ArrayList<JawabanData>();
+    
       
     
     //mengirim objek
@@ -97,18 +98,43 @@ public class ServerMain extends javax.swing.JFrame {
             System.out.println("Jawaban received "+jawabanDiterima);
         }
     }
-    
-    private void ngambil kunci dari db() {
-        ArrayList<String> kunci;
-        kunci.add("insert jawaban here")
+    ArrayList<String> kunci = null;
+    private void ngambilkunci() {
+        
+        
+            try
+            {
+                for(int j=1;j<=5;j++)
+                {
+                con = DriverManager.getConnection("jdbc:mysql://localhost:3306/fp_progjar", "root", "");
+                ps = con.prepareStatement("select kuncijawaban from kunci where nomor="+String.valueOf(j));            
+                rs = ps.executeQuery();
+                kunci.add(String.valueOf(rs)); 
+                }
+            }catch(Exception e)
+            {
+                System.out.println(e);
+            }
+             
     }
     
     private void koreksi() {
-        iterasi tiap jawabanData
-                iterasi nomer
-                        cocokin
-                        
-        jawabandata.setnilai(X);
+        int skor=0;
+        for(int i=0;i<userAktif;i++)
+        {
+            for(int j=1;j<=5;j++)
+            {
+                if(jawabanDatas.get(i).getJawabans().get(j).equals(kunci.get(j)))
+                {
+                    skor++;
+                }
+                
+            }
+            jawabanDatas.get(i).setNilai(skor*20);
+        }
+                
+       
+       // jawabanDatas.setnilai(skor*10);
     }
     /**
      * Creates new form ServerMain
@@ -193,7 +219,7 @@ public class ServerMain extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-   
+       
         Rank rank = new Rank();
         rank.setVisible(true);
   //      rank.dispatchEvent(new WindowEvent(rank, WindowEvent.WINDOW_CLOSING));
@@ -203,27 +229,34 @@ public class ServerMain extends javax.swing.JFrame {
 
     private void mulaibuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mulaibuttonActionPerformed
         // TODO add your handling code here:
-        String soalnya;
-        ArrayList<String> jawaban = null;
         ArrayList <SoalData> soals = new ArrayList<SoalData>();
         try {   
-            for(int i=1;i<=5;i++)
-            {
+            for(int i=1;i<=1;i++)
+            {   
+                ArrayList<String> jawaban = new ArrayList<String>();
+                String soalnya;
                 con = DriverManager.getConnection("jdbc:mysql://localhost:3306/fp_progjar", "root", "");
                 ps = con.prepareStatement("select * from soal2 where nomor="+String.valueOf(i));            
                 ResultSet rs = ps.executeQuery();
+                String temp;
                 if(rs.next())
                 {
-                  
                     soalnya = rs.getString("soal");
-                    jawaban.add(rs.getString("jawaban1"));
-                    jawaban.add(rs.getString("jawaban2"));
-                    jawaban.add(rs.getString("jawaban3"));
-                    jawaban.add(rs.getString("jawaban4"));
+                    temp = rs.getString("jawaban1");
+//                    System.out.println(temp);
+                    jawaban.add(temp);
+                    temp = rs.getString("jawaban2");
+                    jawaban.add(temp);
+                    temp = rs.getString("jawaban4");
+                    jawaban.add(temp);
+                    temp = rs.getString("jawaban3");
+                    jawaban.add(temp);
                     
+                 //   System.out.println(soalnya);
                     soals.add(new SoalData(soalnya,jawaban,i));
+//                System.out.println(rs.getString("jawaban1"));    
                 }
-                System.out.println(rs.getString("jawaban1"));    
+                    
            }
             
         } catch(Exception e) {
@@ -239,8 +272,10 @@ public class ServerMain extends javax.swing.JFrame {
         
         for(SoalData soal : soals) {
             //kirim soal
+            System.out.println(soal.getSoal());
             sendObjectTo(soal,INET_ADDR,PORT);
             System.out.println("Sending done.");
+            
             
             //nunggu 10 detik
             try {
@@ -255,6 +290,8 @@ public class ServerMain extends javax.swing.JFrame {
         sendObjectTo(soalTemp,INET_ADDR,PORT);
         
         menerimaJawaban();
+        ngambilkunci();
+        koreksi();
     }//GEN-LAST:event_mulaibuttonActionPerformed
 
     /**
