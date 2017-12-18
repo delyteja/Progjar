@@ -7,12 +7,15 @@ package Client;
 
 import Data.*;
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import static java.lang.Thread.sleep;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.ServerSocket;
@@ -31,8 +34,35 @@ import java.sql.*;
 public class Client extends javax.swing.JFrame {
     final String INET_ADDR = "224.0.0.0";
     final int PORT = 8889;
-    SoalData _soal;
+    SoalData _soal = null;
+    JawabanData _jawabans;
       
+    private void sendObjectTo(Object o, String hostName, int desPort) {    
+        try {      
+            DatagramSocket dSock = new DatagramSocket();
+            InetAddress address = InetAddress.getByName(hostName);
+            ByteArrayOutputStream byteStream = new
+            ByteArrayOutputStream(5000);
+            ObjectOutputStream os = new ObjectOutputStream(new BufferedOutputStream(byteStream));
+            os.flush();
+            os.writeObject(o);
+            os.flush();
+            //retrieves byte array
+            byte[] sendBuf = byteStream.toByteArray();
+            DatagramPacket packet = new DatagramPacket(sendBuf, sendBuf.length, address, desPort);
+            int byteCount = packet.getLength();
+            dSock.send(packet);
+            os.close();
+        }
+        catch (UnknownHostException e) {
+            System.err.println("Exception:  " + e);
+            e.printStackTrace();    
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
     private Object recvObjFrom(String hostName, int recvPort){    
         try {
           MulticastSocket clientSocket = new MulticastSocket(recvPort);
@@ -42,8 +72,7 @@ public class Client extends javax.swing.JFrame {
           DatagramPacket packet = new DatagramPacket(recvBuf,recvBuf.length);
           clientSocket.receive(packet);
           int byteCount = packet.getLength();
-          ByteArrayInputStream byteStream = new
-                                      ByteArrayInputStream(recvBuf);
+          ByteArrayInputStream byteStream = new ByteArrayInputStream(recvBuf);
           ObjectInputStream is = new
                ObjectInputStream(new BufferedInputStream(byteStream));
           Object o = is.readObject();
@@ -58,6 +87,42 @@ public class Client extends javax.swing.JFrame {
             e.printStackTrace(); 
         }
         return(null);  
+    }
+    
+    private void terimaSoal() {
+         while(true) {
+            System.out.println("Receiving soal...");
+            _soal = (SoalData) recvObjFrom(INET_ADDR,PORT);
+            System.out.println("Soal received...\n"+_soal.getSoal());
+
+            if(_soal.getNomerSoal() == -1) break;
+
+            soal.setText(_soal.getSoal());
+
+            ArrayList<String> jawabans = _soal.getJawabans();
+            j1.setText(jawabans.get(0));
+            j2.setText(jawabans.get(1));
+            j3.setText(jawabans.get(2));
+            j4.setText(jawabans.get(3));
+
+            for(int i= _soal.getWaktu();i>=0;i--)
+            {
+                waktu.setText(String.valueOf(i));
+                try {
+                    Thread.sleep(1000);
+                } 
+                catch (InterruptedException ex) {
+                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            waktu.setText("");
+            soal.setText("");
+        }
+    }
+    
+    private void kirimJawaban() {
+        sendObjectTo(jawaban, INET_ADDR,PORT);
+        System.out.println("Jawaban sent.");
     }
     
     /**
@@ -249,69 +314,8 @@ public class Client extends javax.swing.JFrame {
 
             @Override
             public void run() {
-                while(true) {
-                    System.out.println("Receiving soal...");
-                    _soal = (SoalData) recvObjFrom(INET_ADDR,PORT);
-                    System.out.println("Soal received...");
-
-                    soal.setText(_soal.getSoal());
-                    
-                    ArrayList<String> jawabans = _soal.getJawabans();
-                    j1.setText(jawabans.get(0));
-                    j2.setText(jawabans.get(1));
-                    j3.setText(jawabans.get(2));
-                    j4.setText(jawabans.get(3));
-                    
-                    for(int i= _soal.getWaktu();i>=0;i--)
-                    {
-                        waktu.setText(String.valueOf(i));
-                        try {
-                            Thread.sleep(1000);
-                        } 
-                        catch (InterruptedException ex) {
-                            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                    waktu.setText("");
-                    soal.setText("");
-                }
-                /*
-                for(int k=1;k<5;k++)
-                {   
-                    Function f = new Function(k);
-                    ResultSet rs = null;
-                    rs = f.find(null);
-                    
-                    try{
-                    if(rs.next())
-                        {
-                            soal.setText(rs.getString("soal"));
-                        }
-                        f=null;
-                    
-                    }
-                    catch(Exception ex)
-                    {
-                        System.out.println("Error :" + ex);
-                    }
-                   
-                   
-                    
-                    for(int i=10;i>=0;i--)
-                    {
-                     waktu.setText(String.valueOf(i));
-                     try {
-                        Thread.sleep(1000);
-                        } 
-                        catch (InterruptedException ex) {
-                        Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-                       }
-                    }
-                    waktu.setText("");
-                    soal.setText("");
-                    Function j = new Function(k);
-                    j.InserttoDB(jawaban.getSelection().getActionCommand());
-                }*/
+               terimaSoal();
+               kirimJawaban();
             }
         });
         t.start();

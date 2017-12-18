@@ -24,7 +24,7 @@ public class SoalData implements Serializable {
     public SoalData(String test) {
         this.soal = "contoh soal";
         this.nomerSoal = 1;
-        this.waktu = 10;
+        this.waktu = 3;
         this.jawabans.add("1");
         this.jawabans.add("2");
         this.jawabans.add("3");
