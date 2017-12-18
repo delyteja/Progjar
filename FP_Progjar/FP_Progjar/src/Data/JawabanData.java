@@ -13,44 +13,42 @@ import java.util.ArrayList;
  * @author Raca
  */
 public class JawabanData implements Serializable {
-    private int nomerSoal;
-    private int idUser;
-    private ArrayList<Integer> jawabans;
+    private String idUser;
+    private ArrayList<String> jawabans;
+    private int nilai;
+
+    public int getNilai() {
+        return nilai;
+    }
+
+    public void setNilai(int nilai) {
+        this.nilai = nilai;
+    }
 
     public JawabanData(String test) {
-        this.nomerSoal = 12;
-        this.idUser = 13;
-        this.jawabans.add(12);
+        this.idUser = "a@a.com";
+        this.jawabans.add("A");
     }
     
-    public JawabanData(int nomerSoal, int idUser, ArrayList<Integer> jawabans) {
-        this.nomerSoal = nomerSoal;
+    public JawabanData(String idUser, ArrayList<String> jawabans) {
         this.idUser = idUser;
         this.jawabans = jawabans;
     }
-    
-    public int getNomerSoal() {
-        return nomerSoal;
-    }
 
-    public int getIdUser() {
+    public String getIdUser() {
         return idUser;
     }
 
     
-    public ArrayList<Integer> getJawabans() {
+    public ArrayList<String> getJawabans() {
         return jawabans;
     }
 
-    public void setNomerSoal(int _nomerSoal) {
-        this.nomerSoal = _nomerSoal;
-    }
-
-    public void setIdUser(int idUser) {
+    public void setIdUser(String idUser) {
         this.idUser = idUser;
     }
 
-    public void setJawabans(ArrayList<Integer> jawabans) {
+    public void setJawabans(ArrayList<String> jawabans) {
         this.jawabans = jawabans;
     }
         

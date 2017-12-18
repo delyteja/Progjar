@@ -98,7 +98,18 @@ public class ServerMain extends javax.swing.JFrame {
         }
     }
     
-
+    private void ngambil kunci dari db() {
+        ArrayList<String> kunci;
+        kunci.add("insert jawaban here")
+    }
+    
+    private void koreksi() {
+        iterasi tiap jawabanData
+                iterasi nomer
+                        cocokin
+                        
+        jawabandata.setnilai(X);
+    }
     /**
      * Creates new form ServerMain
      */
