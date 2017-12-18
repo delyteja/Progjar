@@ -30,6 +30,8 @@ public class ServerMain extends javax.swing.JFrame {
      Connection con = null;
      ResultSet rs =  null;
      PreparedStatement ps = null;
+    int userAktif = 1;
+    ArrayList<JawabanData> jawabanDatas = new ArrayList<JawabanData>();
       
     
     //mengirim objek
@@ -57,7 +59,44 @@ public class ServerMain extends javax.swing.JFrame {
         catch (IOException e) {
             e.printStackTrace();
         }
-  }
+    }
+    
+    private Object recvObjFrom(String hostName, int recvPort){    
+        try {
+          MulticastSocket clientSocket = new MulticastSocket(recvPort);
+          InetAddress address = InetAddress.getByName(hostName);
+          clientSocket.joinGroup(address);
+          byte[] recvBuf = new byte[5000];
+          DatagramPacket packet = new DatagramPacket(recvBuf,recvBuf.length);
+          clientSocket.receive(packet);
+          int byteCount = packet.getLength();
+          ByteArrayInputStream byteStream = new ByteArrayInputStream(recvBuf);
+          ObjectInputStream is = new ObjectInputStream(new BufferedInputStream(byteStream));
+          Object o = is.readObject();
+          is.close();
+          return(o);
+        }
+        catch (IOException e) {
+          System.err.println("Exception:  " + e);
+          e.printStackTrace();
+        }
+        catch (ClassNotFoundException e) { 
+            e.printStackTrace(); 
+        }
+        return(null);  
+    }
+    
+    private void menerimaJawaban() {
+        int jawabanDiterima = 0;
+        
+        while(jawabanDiterima<userAktif) {
+            System.out.println("Receiving jawaban..");
+            JawabanData jawabanTemp = (JawabanData) recvObjFrom(INET_ADDR,PORT);
+            jawabanDatas.add(jawabanTemp);
+            jawabanDiterima++;
+            System.out.println("Jawaban received "+jawabanDiterima);
+        }
+    }
     
 
     /**
@@ -193,17 +232,23 @@ public class ServerMain extends javax.swing.JFrame {
       //  soals.add(new SoalData("test"));
         
         for(SoalData soal : soals) {
+            //kirim soal
             sendObjectTo(soal,INET_ADDR,PORT);
             System.out.println("Sending done.");
             
             //nunggu X detik
             try {
-                Thread.sleep(soal.getWaktu()*1000);
+                Thread.sleep(soal.getWaktu()*1000+2000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(ServerMain.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         System.out.println("Done Sending.");
+        //memerintahkan kalo soal udah habis
+        SoalData soalTemp = new SoalData("",null,-1,0);
+        sendObjectTo(soalTemp,INET_ADDR,PORT);
+        
+        menerimaJawaban();
     }//GEN-LAST:event_mulaibuttonActionPerformed
 
     /**

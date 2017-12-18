@@ -6,6 +6,7 @@
 package Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  *
@@ -14,18 +15,18 @@ import java.io.Serializable;
 public class JawabanData implements Serializable {
     private int nomerSoal;
     private int idUser;
-    private int jawaban;
+    private ArrayList<Integer> jawabans;
 
-    public JawabanData() {
+    public JawabanData(String test) {
         this.nomerSoal = 12;
         this.idUser = 13;
-        this.jawaban = 12;
+        this.jawabans.add(12);
     }
     
-    public JawabanData(int nomerSoal, int idUser, int jawaban) {
+    public JawabanData(int nomerSoal, int idUser, ArrayList<Integer> jawabans) {
         this.nomerSoal = nomerSoal;
         this.idUser = idUser;
-        this.jawaban = jawaban;
+        this.jawabans = jawabans;
     }
     
     public int getNomerSoal() {
@@ -36,10 +37,11 @@ public class JawabanData implements Serializable {
         return idUser;
     }
 
-    public int getJawaban() {
-        return jawaban;
-    }
     
+    public ArrayList<Integer> getJawabans() {
+        return jawabans;
+    }
+
     public void setNomerSoal(int _nomerSoal) {
         this.nomerSoal = _nomerSoal;
     }
@@ -48,9 +50,8 @@ public class JawabanData implements Serializable {
         this.idUser = idUser;
     }
 
-    public void setJawaban(int jawaban) {
-        this.jawaban = jawaban;
+    public void setJawabans(ArrayList<Integer> jawabans) {
+        this.jawabans = jawabans;
     }
-    
-    
+        
 }
