@@ -209,7 +209,6 @@ public class Client extends javax.swing.JFrame {
         soal.setOpaque(true);
 
         jawaban.add(j4);
-        j4.setText("jawab d");
 
         javax.swing.GroupLayout backgroundLayout = new javax.swing.GroupLayout(background);
         background.setLayout(backgroundLayout);
@@ -265,7 +264,7 @@ public class Client extends javax.swing.JFrame {
                 .addComponent(j3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(j4)
-                .addContainerGap(34, Short.MAX_VALUE))
+                .addContainerGap(36, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
