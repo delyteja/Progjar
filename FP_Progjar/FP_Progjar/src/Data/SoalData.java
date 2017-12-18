@@ -16,7 +16,6 @@ public class SoalData implements Serializable {
     private String soal;
     ArrayList<String> jawabans = new ArrayList<String>();
     private int nomerSoal;
- //   private int waktu;
 
     public SoalData() {
     }
@@ -24,7 +23,6 @@ public class SoalData implements Serializable {
     public SoalData(String test) {
         this.soal = "contoh soal";
         this.nomerSoal = 1;
-        this.waktu = 3;
         this.jawabans.add("1");
         this.jawabans.add("2");
         this.jawabans.add("3");
@@ -35,8 +33,6 @@ public class SoalData implements Serializable {
         this.soal = soal;
         this.jawabans = jawabans;
         this.nomerSoal = nomerSoal;
-      
-        
     }
     
     public String getSoal() {
@@ -50,8 +46,6 @@ public class SoalData implements Serializable {
     public int getNomerSoal() {
         return nomerSoal;
     }
-
-
 
     public void setSoal(String soal) {
         this.soal = soal;

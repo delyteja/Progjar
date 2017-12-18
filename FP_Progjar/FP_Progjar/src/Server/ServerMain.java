@@ -195,9 +195,9 @@ public class ServerMain extends javax.swing.JFrame {
         String soalnya;
         ArrayList<String> jawaban = null;
         ArrayList <SoalData> soals = new ArrayList<SoalData>();
-        try
-        {   for(int i=1;i<=5;i++)
-           {
+        try {   
+            for(int i=1;i<=5;i++)
+            {
                 con = DriverManager.getConnection("jdbc:mysql://localhost:3306/fp_progjar", "root", "");
                 ps = con.prepareStatement("select * from soal2 where nomor="+String.valueOf(i));            
                 ResultSet rs = ps.executeQuery();
@@ -212,17 +212,12 @@ public class ServerMain extends javax.swing.JFrame {
                     
                     soals.add(new SoalData(soalnya,jawaban,i));
                 }
-                System.out.println(rs.getString("jawaban1"));
-                
+                System.out.println(rs.getString("jawaban1"));    
            }
             
-        }catch(Exception e)
-            {
-                System.out.println(e);
-            }
-        
-        
-        
+        } catch(Exception e) {
+            System.out.println(e);
+        }
         /**
          * SQL:
          * Semua soal dimasukkan dalam soals 
@@ -236,16 +231,16 @@ public class ServerMain extends javax.swing.JFrame {
             sendObjectTo(soal,INET_ADDR,PORT);
             System.out.println("Sending done.");
             
-            //nunggu X detik
+            //nunggu 10 detik
             try {
-                Thread.sleep(soal.getWaktu()*1000+2000);
+                Thread.sleep(10);
             } catch (InterruptedException ex) {
                 Logger.getLogger(ServerMain.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         System.out.println("Done Sending.");
         //memerintahkan kalo soal udah habis
-        SoalData soalTemp = new SoalData("",null,-1,0);
+        SoalData soalTemp = new SoalData("",null,-1);
         sendObjectTo(soalTemp,INET_ADDR,PORT);
         
         menerimaJawaban();
