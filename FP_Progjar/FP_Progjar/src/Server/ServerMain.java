@@ -225,7 +225,7 @@ public class ServerMain extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
        
-        Rank rank = new Rank();
+        Rank rank = new Rank(jawabanDatas);
         rank.setVisible(true);
   //      rank.dispatchEvent(new WindowEvent(rank, WindowEvent.WINDOW_CLOSING));
         rank.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

@@ -23,13 +23,23 @@ public class Rank extends javax.swing.JFrame {
     public Rank() {
         initComponents();
     }
+    
+    public Rank(ArrayList<JawabanData> jawabanDatas) {
+        this();
+        setRanking(jawabanDatas);
+    }
 
     
     private void setRanking(ArrayList<JawabanData> jawabanDatas) {
         Comparator<JawabanData> nilaiComparator = (c1, c2) -> c1.getNilai()-(c2.getNilai()); 
         jawabanDatas.sort(nilaiComparator);
+        int i=0;
         for(JawabanData jawabanData : jawabanDatas) {
-            System.out.println(jawabanData.getIdUser()+" mendapat nilai "+jawabanData.getNilai());
+//            System.out.println(jawabanData.getIdUser()+" mendapat nilai "+jawabanData.getNilai());
+            jTable1.setValueAt(i+1, i, 0);
+            jTable1.setValueAt(jawabanData.getIdUser(), i, 1);
+            jTable1.setValueAt(jawabanData.getNilai(), i, 2);
+            i++;
         }
     }
     /**
