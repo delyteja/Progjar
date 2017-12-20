@@ -319,8 +319,6 @@ public class Client extends javax.swing.JFrame {
                terimaSoal();
                kirimJawaban();
                Nilai n = new Nilai(_jawabans.getNilai());
-               n.setVisible(true);
-               System.out.println("nilai kamu "+_jawabans.getNilai());
             }
         });
         t.start();

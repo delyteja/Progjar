@@ -36,7 +36,7 @@ public class testdely {
                     con = DriverManager.getConnection("jdbc:mysql://localhost:3306/fp_progjar", "root", "");
                     ps = con.prepareStatement("select kuncijawaban from kunci where nomor="+j);            
                     rs = ps.executeQuery();
-                    rs.next();
+                    rs.next()
                     kunci.add(rs.getString("kuncijawaban")); 
                     System.out.println("Kunci untuk nomer "+j+" "+rs.getString("kuncijawaban"));
                 }
