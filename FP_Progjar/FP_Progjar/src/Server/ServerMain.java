@@ -27,6 +27,8 @@ import javax.swing.JFrame;
 public class ServerMain extends javax.swing.JFrame {
     final String INET_ADDR = "224.0.0.0";
     final int PORT = 8889;
+    final int JUMLAH_SOAL = 5;
+    final int waktuSoal = 2;
      Connection con = null;
      ResultSet rs =  null;
      PreparedStatement ps = null;
@@ -96,34 +98,39 @@ public class ServerMain extends javax.swing.JFrame {
             jawabanDatas.add(jawabanTemp);
             jawabanDiterima++;
             System.out.println("Jawaban received "+jawabanDiterima);
+            System.out.println(jawabanTemp.getIdUser());
+            for(String jawabanUser : jawabanTemp.getJawabans() ) {
+                System.out.println(jawabanUser);
+            }
         }
     }
-    ArrayList<String> kunci = null;
+    ArrayList<String> kunci = new ArrayList<String>();
     private void ngambilkunci() {
-        
-        
-            try
+        try
+        {
+            for(int j=1;j<=5;j++)
             {
-                for(int j=1;j<=5;j++)
-                {
                 con = DriverManager.getConnection("jdbc:mysql://localhost:3306/fp_progjar", "root", "");
-                ps = con.prepareStatement("select kuncijawaban from kunci where nomor="+String.valueOf(j));            
+                ps = con.prepareStatement("select kuncijawaban from kunci where nomor="+j);            
                 rs = ps.executeQuery();
-                kunci.add(String.valueOf(rs)); 
-                }
-            }catch(Exception e)
-            {
-                System.out.println(e);
+                rs.next();
+                kunci.add(rs.getString("kuncijawaban")); 
+//                System.out.println("Kunci untuk nomer "+j+" "+rs.getString("kuncijawaban"));
             }
-             
+        }catch(Exception e)
+        {
+            System.out.println("Gagal ambil kunci:"+e);
+        }     
     }
     
     private void koreksi() {
         int skor=0;
         for(int i=0;i<userAktif;i++)
         {
-            for(int j=1;j<=5;j++)
+            for(int j=0;j<5;j++)
             {
+//                System.out.println(jawabanDatas.get(i).getJawabans().get(j));
+//                System.out.println(kunci.get(j));
                 if(jawabanDatas.get(i).getJawabans().get(j).equals(kunci.get(j)))
                 {
                     skor++;
@@ -131,10 +138,8 @@ public class ServerMain extends javax.swing.JFrame {
                 
             }
             jawabanDatas.get(i).setNilai(skor*20);
+            System.out.println(jawabanDatas.get(i).getIdUser()+" = "+jawabanDatas.get(i).getNilai());
         }
-                
-       
-       // jawabanDatas.setnilai(skor*10);
     }
     /**
      * Creates new form ServerMain
@@ -231,7 +236,7 @@ public class ServerMain extends javax.swing.JFrame {
         // TODO add your handling code here:
         ArrayList <SoalData> soals = new ArrayList<SoalData>();
         try {   
-            for(int i=1;i<=1;i++)
+            for(int i=1;i<=JUMLAH_SOAL;i++)
             {   
                 ArrayList<String> jawaban = new ArrayList<String>();
                 String soalnya;
@@ -261,14 +266,9 @@ public class ServerMain extends javax.swing.JFrame {
             
         } catch(Exception e) {
             System.out.println(e);
-        }
-        /**
-         * SQL:
-         * Semua soal dimasukkan dalam soals 
-         */
-        //testaja
-        
-      //  soals.add(new SoalData("test"));
+        }       
+      
+//        soals.add(new SoalData("test"));
         
         for(SoalData soal : soals) {
             //kirim soal
@@ -279,7 +279,7 @@ public class ServerMain extends javax.swing.JFrame {
             
             //nunggu 10 detik
             try {
-                Thread.sleep(10);
+                Thread.sleep( (waktuSoal*1000)+3000 );
             } catch (InterruptedException ex) {
                 Logger.getLogger(ServerMain.class.getName()).log(Level.SEVERE, null, ex);
             }

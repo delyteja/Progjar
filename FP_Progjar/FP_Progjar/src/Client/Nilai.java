@@ -17,7 +17,15 @@ public class Nilai extends javax.swing.JFrame {
     public Nilai() {
         initComponents();
     }
+    
+    public Nilai(int nilai) {
+        this();
+        setNilai(nilai);
+    }
 
+    private void setNilai(int nilai) {
+        jLabel2.setText(String.valueOf(nilai));
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

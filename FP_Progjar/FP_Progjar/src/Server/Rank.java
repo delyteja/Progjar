@@ -5,6 +5,12 @@
  */
 package Server;
 
+import Data.JawabanData;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+
 /**
  *
  * @author DELY
@@ -18,6 +24,14 @@ public class Rank extends javax.swing.JFrame {
         initComponents();
     }
 
+    
+    private void setRanking(ArrayList<JawabanData> jawabanDatas) {
+        Comparator<JawabanData> nilaiComparator = (c1, c2) -> c1.getNilai()-(c2.getNilai()); 
+        jawabanDatas.sort(nilaiComparator);
+        for(JawabanData jawabanData : jawabanDatas) {
+            System.out.println(jawabanData.getIdUser()+" mendapat nilai "+jawabanData.getNilai());
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

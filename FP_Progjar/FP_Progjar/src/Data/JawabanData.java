@@ -51,5 +51,8 @@ public class JawabanData implements Serializable {
     public void setJawabans(ArrayList<String> jawabans) {
         this.jawabans = jawabans;
     }
-        
+     
+    public void addJawaban(String jawaban) {
+        this.jawabans.add(jawaban);
+    }
 }

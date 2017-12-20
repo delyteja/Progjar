@@ -35,7 +35,8 @@ public class Client extends javax.swing.JFrame {
     final String INET_ADDR = "224.0.0.0";
     final int PORT = 8889;
     SoalData _soal = null;
-    JawabanData _jawabans;
+    final int waktuSoal = 2;
+    JawabanData _jawabans = null;
       
     private void sendObjectTo(Object o, String hostName, int desPort) {    
         try {      
@@ -104,8 +105,8 @@ public class Client extends javax.swing.JFrame {
             j2.setText(jawabans.get(1));
             j3.setText(jawabans.get(2));
             j4.setText(jawabans.get(3));
-            System.out.println("lalala");
-            for(int i=10; i>=0; i--)
+            
+            for(int i=waktuSoal; i>=0; i--)
             {
                 waktu.setText(String.valueOf(i));
                 try {
@@ -117,11 +118,21 @@ public class Client extends javax.swing.JFrame {
             }
             waktu.setText("");
             soal.setText("");
+            
+            if(jawaban.getSelection() == null) {
+                _jawabans.addJawaban("z");
+            } else {
+                _jawabans.addJawaban(jawaban.getSelection().getActionCommand());
+            }
         }
     }
     
     private void kirimJawaban() {
-        sendObjectTo(jawaban, INET_ADDR,PORT);
+        sendObjectTo(_jawabans, INET_ADDR,PORT);
+        System.out.println(_jawabans.getIdUser());
+        for(String jawabanUser : _jawabans.getJawabans() ) {
+            System.out.println(jawabanUser);
+        }
         System.out.println("Jawaban sent.");
     }
     
@@ -130,6 +141,12 @@ public class Client extends javax.swing.JFrame {
      */
     public Client() {
         initComponents();
+    }
+    
+    public Client(String user) {
+        this();
+        this._jawabans = new JawabanData(user, new ArrayList<String>());
+        System.out.println("ini");
     }
 
     /**
@@ -301,6 +318,7 @@ public class Client extends javax.swing.JFrame {
             public void run() {
                terimaSoal();
                kirimJawaban();
+               Nilai n = new Nilai(_jawabans.getNilai());
             }
         });
         t.start();

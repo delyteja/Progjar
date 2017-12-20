@@ -19,7 +19,6 @@ import javax.swing.JOptionPane;
  * @author DELY
  */
 public class Login extends javax.swing.JFrame {
-
     /**
      * Creates new form Register
      */
@@ -121,9 +120,8 @@ public class Login extends javax.swing.JFrame {
             ResultSet rs =   ps.executeQuery();
             if(rs.next())
             {
-                Client c1 = new Client();
+                Client c1 = new Client(user);
                 c1.setVisible(true);
-                
             }
             else
             {    //JOptionPane.showConfirmDialog(null, null, null, "Password atau username anda salah");
