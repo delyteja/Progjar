@@ -5,6 +5,13 @@
  */
 package Server;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Comparator;
+
 /**
  *
  * @author DELY
@@ -16,6 +23,25 @@ public class UserAktif extends javax.swing.JFrame {
      */
     public UserAktif() {
         initComponents();
+        setUserAktif();
+    }
+    
+    private void setUserAktif() {
+        try {
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/fp_progjar", "root", "");
+            PreparedStatement ps = con.prepareStatement("select * from user where status=1");
+            ResultSet rs =   ps.executeQuery();
+            int i=0;
+            while(rs.next()) {
+    //            System.out.println(jawabanData.getIdUser()+" mendapat nilai "+jawabanData.getNilai());
+                String user = rs.getString("username");
+                jTable1.setValueAt(user, i, 0);
+                jTable1.setValueAt("1", i, 1);
+                i++;
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
     /**

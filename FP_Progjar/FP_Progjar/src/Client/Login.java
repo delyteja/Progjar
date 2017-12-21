@@ -128,18 +128,21 @@ public class Login extends javax.swing.JFrame {
             ResultSet rs =   ps.executeQuery();
             if(rs.next())
             {
+                PreparedStatement ps2 = con.prepareStatement("UPDATE `user` SET `status`=1 WHERE `username` = '"+user+"'");               
+                ps2.executeUpdate();
                 Client c1 = new Client(user);
                 c1.setVisible(true);
             }
             else
-            {    //JOptionPane.showConfirmDialog(null, null, null, "Password atau username anda salah");
+            {    
+                //JOptionPane.showConfirmDialog(null, null, null, "Password atau username anda salah");
                 //JOptionPane.showMessageDialog(null, infoMessage, "InfoBox: " + titleBar, JOptionPane.INFORMATION_MESSAGE);
             
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("Gagal LOgin");
-            alert.setHeaderText("Ups");
-            alert.setContentText("Username atau Password yang Anda masukkan salah");
-            alert.showAndWait();
+                Alert alert = new Alert(AlertType.INFORMATION);
+                alert.setTitle("Gagal LOgin");
+                alert.setHeaderText("Ups");
+                alert.setContentText("Username atau Password yang Anda masukkan salah");
+                alert.showAndWait();
             }
             
         }
